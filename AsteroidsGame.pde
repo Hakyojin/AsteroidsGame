@@ -1,15 +1,117 @@
-//your variable declarations here
+SpaceShip bob = new SpaceShip();
+boolean up=false;
+boolean left=false;
+boolean right=false;//your variable declarations here
 public void setup() 
 {
-  //your code here
+  size(600,600);
+  background(0);
 }
 public void draw() 
 {
-  //your code here
+  background(0);
+  if(up){bob.accelerate(.1);}
+  if(left){bob.rotate(-5);}
+  if(right){bob.rotate(5);}
+  bob.move();
+  bob.show();
 }
-class SpaceShip //extends Floater  
+public void keyPressed()
+{  
+      if(key=='w'){up=true;}
+      if(key=='a'){left=true;}
+      if(key=='d'){right=true;}
+}
+public void keyReleased()
+{  
+      if(key=='w'){up=false;}
+      if(key=='a'){left=false;}
+      if(key=='d'){right=false;}
+}
+class SpaceShip extends Floater  
 {   
-    //your code here
+  public SpaceShip(){
+    myColor=(255);
+    myCenterX = 300;
+    myCenterY = 300;
+    corners = 27;
+    xCorners = new int[corners];
+    yCorners = new int[corners];
+    xCorners[0] = -4;
+    yCorners[0] = 1;
+    xCorners[1] = -1;
+    yCorners[1] = 2;
+    xCorners[2] = -1;
+    yCorners[2] = 3;
+    xCorners[3] = -4;
+    yCorners[3] = 4;
+    xCorners[4] = -1;
+    yCorners[4] = 5;
+    xCorners[5] = -8;
+    yCorners[5] = 9;
+    xCorners[6] = 1;
+    yCorners[6] = 5;
+    xCorners[7] = 7;
+    yCorners[7] = 4;
+    xCorners[8] = 1;
+    yCorners[8] = 3;
+    xCorners[9] = 2;
+    yCorners[9] = 2;
+    xCorners[10] = 6;
+    yCorners[10] = 2;
+    xCorners[11] = 7;
+    yCorners[11] = 1;
+    xCorners[12] = 10;
+    yCorners[12] = 1;
+    xCorners[13] = 11;
+    yCorners[13] = 0;
+    xCorners[14] = 10;
+    yCorners[14] = -1;
+    xCorners[15] = 7;
+    yCorners[15] = -1;
+    xCorners[16] = 6;
+    yCorners[16] = -2;
+    xCorners[17] = 2;
+    yCorners[17] = -2;
+    xCorners[18] = 1;
+    yCorners[18] = -3;
+    xCorners[19] = 7;
+    yCorners[19] = -4;
+    xCorners[20] = 1;
+    yCorners[20] = -5;
+    xCorners[21] = -8;
+    yCorners[21] = -9;
+    xCorners[22] = -1;
+    yCorners[22] = -5;
+    xCorners[23] = -4;
+    yCorners[23] = -4;
+    xCorners[24] = -1;
+    yCorners[24] = -3;
+    xCorners[25] = -1;
+    yCorners[25] = -2;
+    xCorners[26] = -4;
+    yCorners[26] = -1;
+    for (int i=0;i<corners;i++)
+    {
+      xCorners[i] *= 2.2;
+      yCorners[i] *= 2.2;
+    }
+  }
+  public void setX(int x){myCenterX = x;} 
+  public int getX(){return (int)myCenterX;}   
+  public void setY(int y){myCenterY = y;}   
+  public int getY(){return (int)myCenterY;}   
+  public void setDirectionX(double x){myDirectionX=x;}   
+  public double getDirectionX(){return (int)myDirectionX;}   
+  public void setDirectionY(double y){myDirectionY=y;}   
+  public double getDirectionY(){return (int) myDirectionY;}   
+  public void setPointDirection(int degrees){myPointDirection = degrees;}   
+  public double getPointDirection(){return(int)myPointDirection;}
+  public void keyPressed(){
+    if(key=='d'){
+
+    }
+  }
 }
 abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
 {   
