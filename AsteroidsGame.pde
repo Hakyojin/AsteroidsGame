@@ -1,5 +1,6 @@
 SpaceShip bob = new SpaceShip();
-Asteroid[] jim = new Asteroid[20];
+ArrayList<Asteroid> jim = new ArrayList<Asteroid>();
+ArrayList<Asteroid> deleteList = new ArrayList<Asteroid>();
 Star[] joe = new Star[400];
 boolean up=false;
 boolean left=false;
@@ -13,24 +14,29 @@ public void setup()
   {
     joe[i] = new Star();
   }
-  jim = new Asteroid[20];
-  for(int i=0; i<jim.length;i++)
+  for(int i=0; i<20;i++)
   { 
-    jim[i] = new Asteroid();
+    jim.add(new Asteroid());
   }
 }
 public void draw()
 {
+  for(Asteroid a : deleteList)
+  {
+    jim.remove(a);
+  }
+  deleteList = new ArrayList<Asteroid>();
+
   background(0);
   if(up){bob.accelerate(.1);}
   if(left){bob.rotate(-5);}
   if(right){bob.rotate(5);}
   for(int i=0;i<joe.length;i++)
     joe[i].show();
-  for(int i=0;i<jim.length;i++)
+  for(Asteroid a:jim)
   {
-    jim[i].move();
-    jim[i].show();
+    a.move();
+    a.show();
   }
   bob.move();
   bob.show();
@@ -60,18 +66,8 @@ class Star{
     ellipse(myX,myY,1,1);
   }
 }
-class Asteroid extends Floater
+class Asteroid extends BetterFloater
 {
-  public void setX(int x){myCenterX = x;} 
-  public int getX(){return (int)myCenterX;}   
-  public void setY(int y){myCenterY = y;}   
-  public int getY(){return (int)myCenterY;}   
-  public void setDirectionX(double x){myDirectionX=x;}   
-  public double getDirectionX(){return (int)myDirectionX;}   
-  public void setDirectionY(double y){myDirectionY=y;}   
-  public double getDirectionY(){return (int) myDirectionY;}   
-  public void setPointDirection(int degrees){myPointDirection = degrees;}   
-  public double getPointDirection(){return(int)myPointDirection;}
   private int spin;
   public Asteroid()
   {
@@ -146,9 +142,20 @@ class Asteroid extends Floater
   {
     super.move();
     rotate(spin);
+    if(dist((float)myCenterX, (float)myCenterY, (float)bob.getX(), (float)bob.getY()) < 35)
+    {
+      deleteList.add(this);
+    }
+  }
+  public void show()
+  {
+    strokeWeight(1);
+    stroke(myColor);
+    fill(myColor);   
+    super.show();
   }
 }
-class SpaceShip extends Floater  
+class SpaceShip extends BetterFloater  
 {   
   public SpaceShip(){
     myColor=(255);
@@ -217,17 +224,72 @@ class SpaceShip extends Floater
       yCorners[i] *= 2.2;
     }
   }
-  public void setX(int x){myCenterX = x;} 
-  public int getX(){return (int)myCenterX;}   
-  public void setY(int y){myCenterY = y;}   
-  public int getY(){return (int)myCenterY;}   
-  public void setDirectionX(double x){myDirectionX=x;}   
-  public double getDirectionX(){return (int)myDirectionX;}   
-  public void setDirectionY(double y){myDirectionY=y;}   
-  public double getDirectionY(){return (int) myDirectionY;}   
-  public void setPointDirection(int degrees){myPointDirection = degrees;}   
-  public double getPointDirection(){return(int)myPointDirection;}
+  public void show()
+  {
+    strokeWeight(1);
+    stroke(myColor);
+    fill(myColor);   
+    super.show();
   }
+  }
+class BetterFloater extends Floater
+{
+  //I've given up on commenting so good luck
+  public void setX(int x) {this.myCenterX = x;} 
+  public int getX() {return (int)this.myCenterX;}
+  public void setY(int y) {this.myCenterY = y;}
+  public int getY() {return (int)this.myCenterY;}
+  public void setDirectionX(double x) {this.myDirectionX = x;}
+  public double getDirectionX() {return this.myDirectionX;}
+  public void setDirectionY(double y) {this.myDirectionY = y;}
+  public double getDirectionY() {return this.myDirectionY;}
+  public void setPointDirection(int degrees) {this.myPointDirection = degrees;}
+  public double getPointDirection() {return this.myPointDirection;}
+
+  public void show()
+  {  
+    double dRadians = myPointDirection*(Math.PI/180);
+
+    showAtRelPos(-width, -height, dRadians);
+    showAtRelPos(-width, 0, dRadians);
+    showAtRelPos(-width, height, dRadians);
+
+    showAtRelPos(0, -height, dRadians);
+    showAtRelPos(0, 0, dRadians);
+    showAtRelPos(0, height, dRadians);
+
+    showAtRelPos(width, -height, dRadians);
+    showAtRelPos(width, 0, dRadians);
+    showAtRelPos(width, height, dRadians);
+  }
+
+  protected double getRotatedX(double x, double y, double dRadians)
+  {
+    return (x * Math.cos(dRadians)) - (y * Math.sin(dRadians));
+  }
+
+  protected double getRotatedY(double x, double y, double dRadians)
+  {
+    return (x * Math.sin(dRadians)) + (y * Math.cos(dRadians));
+  }
+
+  private void showAtRelPos(int relX, int relY, double dRadians)
+  {
+    //convert degrees to radians for sin and cos         
+                     
+    float xRotatedTranslated, yRotatedTranslated;    
+    beginShape();         
+    for(int nI = 0; nI < corners; nI++)    
+    {     
+      //rotate and translate the coordinates of the floater using current direction 
+      xRotatedTranslated = (float)(getRotatedX(xCorners[nI], yCorners[nI], dRadians)+(myCenterX + relX));     
+      yRotatedTranslated = (float)(getRotatedY(xCorners[nI], yCorners[nI], dRadians)+(myCenterY + relY));      
+      vertex(xRotatedTranslated,yRotatedTranslated);
+    }   
+    endShape(CLOSE);
+  }
+}
+
 abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
 {   
   protected int corners;  //the number of corners, a triangular floater has 3   
