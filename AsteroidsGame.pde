@@ -1,6 +1,7 @@
 SpaceShip bob = new SpaceShip();
 ArrayList<Asteroid> jim = new ArrayList<Asteroid>();
-ArrayList<Asteroid> deleteList = new ArrayList<Asteroid>();
+ArrayList<Object> deleteList = new ArrayList<Object>();
+ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 Star[] joe = new Star[400];
 boolean up=false;
 boolean left=false;
@@ -21,11 +22,14 @@ public void setup()
 }
 public void draw()
 {
-  for(Asteroid a : deleteList)
+  for(Object a : deleteList)
   {
-    jim.remove(a);
+    if(a instanceof Asteroid)
+      jim.remove(a);
+    else if(a instanceof Bullet)
+      bullets.remove(a);
   }
-  deleteList = new ArrayList<Asteroid>();
+  deleteList = new ArrayList<Object>();
 
   background(0);
   if(up){bob.accelerate(.1);}
@@ -40,12 +44,25 @@ public void draw()
   }
   bob.move();
   bob.show();
+  for(Bullet b:bullets)
+  {
+    b.move();
+    b.show();
+  }
 }
 public void keyPressed()
 {  
       if(key=='w'){up=true;}
       if(key=='a'){left=true;}
       if(key=='d'){right=true;}
+      if(key=='b'){bullets.add(new Bullet(bob));}
+      if(key == 'k'){
+      bob.setX((int)(Math.random()*600));
+      bob.setY((int)(Math.random()*600));
+      bob.setDirectionX(0);
+      bob.setDirectionY(0);
+      bob.setPointDirection((int)(Math.random()*600));
+  }
 }
 public void keyReleased()
 {  
@@ -146,6 +163,14 @@ class Asteroid extends BetterFloater
     {
       deleteList.add(this);
     }
+    for(Bullet b:bullets)
+    {
+      if(dist((float)myCenterX, (float)myCenterY, (float)b.getX(), (float)b.getY()) < 10)
+      {
+       deleteList.add(this);
+       deleteList.add(b);
+      }
+    }
   }
   public void show()
   {
@@ -154,6 +179,42 @@ class Asteroid extends BetterFloater
     fill(myColor);   
     super.show();
   }
+}
+class Bullet extends BetterFloater
+{
+  public Bullet(SpaceShip bob){
+    myCenterX = bob.getX();
+    myCenterY = bob.getY();
+    myPointDirection = bob.getPointDirection();
+    double dRadians = myPointDirection*(Math.PI/180);
+    myDirectionX = 5*Math.cos(dRadians)+bob.getDirectionX();
+    myDirectionY = 5*Math.sin(dRadians)+bob.getDirectionY();
+  }
+  
+  public void show(){
+    fill(0,220,200);
+    noStroke();
+    ellipse((float)myCenterX, (float)myCenterY, 5,5);
+  }
+
+  public void move(){
+    myCenterX += myDirectionX;
+    myCenterY += myDirectionY;
+    if(this.getX()<0||this.getX()>width||this.getY()<0||this.getY()>height)
+    {
+      deleteList.add(this);
+    }
+  }
+  public void setX(int x){myCenterX = x;}  
+  public int getX(){return (int)myCenterX;}   
+  public void setY(int y){myCenterY = y;}   
+  public int getY(){return (int)myCenterY;}   
+  public void setDirectionX(double x){myDirectionX = x;}   
+  public double getDirectionX(){return (int)myDirectionX;}  
+  public void setDirectionY(double y){myDirectionY = y;}   
+  public double getDirectionY(){return (int)myDirectionY;}   
+  public void setPointDirection(int degrees){myPointDirection = degrees;}   
+  public double getPointDirection(){return (int)myPointDirection;}
 }
 class SpaceShip extends BetterFloater  
 {   
